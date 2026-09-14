@@ -88,10 +88,25 @@ export const createDocPort = (): DocPort => ({
       );
     }
 
+    /**
+     * Docs bölməni tamamilə abzassız qoymağa icazə vermir və
+     * «Can't remove the last paragraph in a document section» atır.
+     * Silinə bilməyən elementi silmək əvəzinə boşaldırıq — nəticə eynidir,
+     * səhifədə görünən heç nə qalmır.
+     */
     for (let i = body.getNumChildren() - 1; i > cutAt; i--) {
-      body.getChild(i).removeFromParent();
+      const child = body.getChild(i);
+      try {
+        child.removeFromParent();
+      } catch {
+        if (child.getType() === DocumentApp.ElementType.PARAGRAPH) {
+          child.asParagraph().clear();
+        } else if (child.getType() === DocumentApp.ElementType.LIST_ITEM) {
+          child.asListItem().clear();
+        }
+      }
     }
-    // Docs boş gövdəyə icazə vermir — sonuncu element silinibsə boş abzas qoyulur.
+
     if (body.getNumChildren() === 0) body.appendParagraph("");
 
     doc.saveAndClose();

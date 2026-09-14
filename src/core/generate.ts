@@ -105,33 +105,46 @@ export const generateCertificate = (
   const withCode: CertificateRow = { ...row, refCode: code };
   const created: string[] = [];
 
+  // Hansı mərhələdə olduğumuz izlənilir ki, nasazlıq halında cədvəldəki
+  // mesaj yerini göstərsin — istehsalda xətanı tapmağın ən sürətli yolu budur.
+  let step = "başlanğıc";
+
   try {
     // ⑥ Tam versiya: kopyala, doldur, QR, PDF
+    step = "şablon kopyalanarkən";
     const fullDocId = doc.copy(template.docId, fileName(code, row.equipment, "full", "doc"));
     created.push(fullDocId);
 
+    step = "QR alınarkən";
     const qrImage = qr.render(buildQrPayload(withCode));
 
+    step = "yer tutucular doldurularkən";
     for (const value of resolveMapping(withCode, mapping, row.language).values) {
       if (value.isQr) doc.insertImage(fullDocId, value.placeholder, qrImage);
       else doc.replaceText(fullDocId, value.placeholder, value.value);
     }
 
+    step = "tam PDF alınarkən";
     const fullPdfId = doc.exportPdf(fullDocId, fileName(code, row.equipment, "full", "pdf"));
     created.push(fullPdfId);
 
     // ⑦ Qısa versiya: kopyanın kopyası, kəs, PDF
+    step = "qısa versiya kopyalanarkən";
     const shortDocId = doc.copy(fullDocId, fileName(code, row.equipment, "short", "doc"));
     created.push(shortDocId);
+    step = "qısa versiya kəsilərkən";
     doc.truncateAfterPageBreak(shortDocId, template.shortVersionBreaks);
+    step = "qısa PDF alınarkən";
     const shortPdfId = doc.exportPdf(shortDocId, fileName(code, row.equipment, "short", "pdf"));
     created.push(shortPdfId);
 
     // ⑧ Qovluq ƏN SONDA
+    step = "qovluq açılarkən";
     const folderId = drive.createFolder(folderName(code, row.equipment));
     for (const fileId of created) drive.move(fileId, folderId);
 
     // ⑨ Geri yazma
+    step = "cədvələ geri yazılarkən";
     const issuedAt = now();
     if (isNewCode) {
       sheet.appendJournal({ code, rowNumber, issuedAt, folderId });
@@ -156,6 +169,7 @@ export const generateCertificate = (
         // təmizləmə uğursuz olsa da əsas səhvi gizlətmirik
       }
     }
-    return fail(error instanceof Error ? error.message : String(error));
+    const detail = error instanceof Error ? error.message : String(error);
+    return fail(`${step}: ${detail}`);
   }
 };
