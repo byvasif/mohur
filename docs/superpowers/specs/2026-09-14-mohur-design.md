@@ -82,14 +82,14 @@ Gələcəkdə 3 səhifəlik qısa versiya lazım olsa, kod deyil bu xana dəyiş
 
 | Dil | Yer tutucu | Sütun | Format | Dəyər əvəzləmə |
 |---|---|---|---|---|
-| az | `{{EQUIPMENT}}` | Avadanlıq adı | mətn | |
-| az | `{{SERIAL}}` | Seriya nömrəsi | mətn | |
-| az | `{{COMPANY}}` | Sifarişçi firma | mətn | |
-| az | `{{TEST_DATE}}` | Test tarixi | `dd.MM.yyyy` | |
-| az | `{{NEXT_DATE}}` | Növbəti müayinə | `dd.MM.yyyy` | |
-| az | `{{INSPECTOR}}` | Müayinə edən | mətn | |
+| az | `{{EQUIPMENT}}` | Avadanlıq adı | text | |
+| az | `{{SERIAL}}` | Seriya nömrəsi | text | |
+| az | `{{COMPANY}}` | Sifarişçi firma | text | |
+| az | `{{TEST_DATE}}` | Test tarixi | date | |
+| az | `{{NEXT_DATE}}` | Növbəti müayinə | date | |
+| az | `{{INSPECTOR}}` | Müayinə edən | text | |
 | az | `{{RESULT}}` | Nəticə | enum | `PASS=UYĞUNDUR;FAIL=UYĞUN DEYİL` |
-| az | `{{REF}}` | Referans kodu | mətn | |
+| az | `{{REF}}` | Referans kodu | text | |
 | az | `{{QR}}` | — | qr | |
 | en | `{{RESULT}}` | Nəticə | enum | `PASS=CONFORMS;FAIL=DOES NOT CONFORM` |
 | en | … | … | … | |
