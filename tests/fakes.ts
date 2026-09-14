@@ -30,6 +30,7 @@ export const templates: TemplateRow[] = [
 
 export const mapping: MappingRow[] = [
   { language: "az", placeholder: "{{EQUIPMENT}}", column: "equipment", format: "text", values: "" },
+  { language: "az", placeholder: "{{MANUFACTURER}}", column: "manufacturer", format: "text", values: "" },
   { language: "az", placeholder: "{{COMPANY}}", column: "company", format: "text", values: "" },
   { language: "az", placeholder: "{{TEST_DATE}}", column: "testDate", format: "date", values: "" },
   { language: "az", placeholder: "{{REF}}", column: "refCode", format: "text", values: "" },

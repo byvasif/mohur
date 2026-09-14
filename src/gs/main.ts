@@ -1,5 +1,6 @@
 import { generateCertificate } from "@/core/generate";
 import type { GenerateDeps } from "@/core/ports";
+import { bootstrapSheets } from "./bootstrap";
 import { createDocPort } from "./doc";
 import { createDrivePort, createQrPort } from "./drive";
 import { SHEETS, createSheetPort, readRow } from "./sheet";
@@ -54,21 +55,24 @@ export function onStatusEdit(event: GoogleAppsScript.Events.SheetsOnEdit): void 
 }
 
 /**
- * Bir dəfə əl ilə işə salınır: quraşdırılan tetikleyicini yaradır.
- * Təkrar çağırılsa köhnəsi silinib yenisi qurulur — dublikat tetikleyici qalmır.
+ * Bir dəfə əl ilə işə salınır: sekmələri qurur və tetikleyicini yaradır.
+ *
+ * Təkrar çağırıla bilər — mövcud sekmələrə toxunmur, tetikleyicinin isə
+ * köhnəsini silib yenisini qurur ki, dublikat qalmasın.
  */
 export function setup(): void {
   const spreadsheet = SpreadsheetApp.getActive();
 
+  const created = bootstrapSheets();
+
   for (const trigger of ScriptApp.getProjectTriggers()) {
     if (trigger.getHandlerFunction() === HANDLER) ScriptApp.deleteTrigger(trigger);
   }
-
   ScriptApp.newTrigger(HANDLER).forSpreadsheet(spreadsheet).onEdit().create();
 
-  SpreadsheetApp.getActive().toast(
-    "Tetikleyici quruldu. Status sütununu «Hazır» edin.",
-    "Möhür",
-    5,
-  );
+  const message =
+    created.length > 0
+      ? `Sekmələr quruldu: ${created.join(", ")}. İndi «Şablonlar» sekməsinə Doc ID-lərini yaz.`
+      : "Sekmələr artıq var, toxunulmadı. Tetikleyici yeniləndi.";
+  spreadsheet.toast(message, "Möhür", 8);
 }
