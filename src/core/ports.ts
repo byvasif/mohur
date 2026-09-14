@@ -53,8 +53,15 @@ export interface DocPort {
 }
 
 export interface DrivePort {
-  createFolder(name: string): string;
-  move(fileId: string, folderId: string): void;
+  /** Adı verilmiş qovluğu tapır, yoxdursa yaradır. Təkrar üretimdə dublikat qovluq açılmır. */
+  ensureFolder(name: string): string;
+  /**
+   * Yeni faylları qovluğa qoyur və qovluqda əvvəldən olan faylları zibilə atır.
+   *
+   * Sıra təhlükəsizdir: əvvəlcə yenilər yerinə qoyulur, SONRA köhnələr silinir.
+   * Tərsi olsaydı, araya düşən nasazlıq sertifikatı tamamilə yox edərdi.
+   */
+  placeFiles(folderId: string, fileIds: string[]): void;
   url(fileId: string): string;
 }
 

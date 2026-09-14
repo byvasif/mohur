@@ -10,12 +10,28 @@ const rootFolder = (): GoogleAppsScript.Drive.Folder => {
 };
 
 export const createDrivePort = (): DrivePort => ({
-  createFolder(name: string): string {
-    return rootFolder().createFolder(name).getId();
+  ensureFolder(name: string): string {
+    const root = rootFolder();
+    const existing = root.getFoldersByName(name);
+    return existing.hasNext() ? existing.next().getId() : root.createFolder(name).getId();
   },
 
-  move(fileId: string, folderId: string): void {
-    DriveApp.getFileById(fileId).moveTo(DriveApp.getFolderById(folderId));
+  placeFiles(folderId: string, fileIds: string[]): void {
+    const folder = DriveApp.getFolderById(folderId);
+
+    // Köhnələr ƏVVƏLCƏ qeyd olunur, silinmir.
+    const old: GoogleAppsScript.Drive.File[] = [];
+    const iterator = folder.getFiles();
+    while (iterator.hasNext()) old.push(iterator.next());
+
+    // Yenilər yerinə qoyulur.
+    for (const fileId of fileIds) DriveApp.getFileById(fileId).moveTo(folder);
+
+    // Yalnız indi köhnələr zibilə atılır — yenilər artıq qovluqdadır.
+    const fresh = new Set(fileIds);
+    for (const file of old) {
+      if (!fresh.has(file.getId())) file.setTrashed(true);
+    }
   },
 
   url(fileId: string): string {

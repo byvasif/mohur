@@ -14,7 +14,7 @@ describe("generateCertificate", () => {
     expect(rec.copies).toHaveLength(2); // tam Doc + qısa Doc
     expect(rec.pdfs).toHaveLength(2); // tam PDF + qısa PDF
     expect(rec.folders).toHaveLength(1);
-    expect(rec.moves).toHaveLength(4); // dörd fayl qovluğa köçür
+    expect(rec.placed[0]!.fileIds).toHaveLength(4); // dörd fayl qovluğa qoyulur
     expect(lastPatch(rec).status).toBe("Verilib");
   });
 
@@ -118,6 +118,15 @@ describe("generateCertificate", () => {
     expect(out.kind).toBe("failed");
     expect(rec.folders).toHaveLength(0);
     expect(rec.removed).toHaveLength(3); // tam Doc, tam PDF, qısa Doc
+  });
+
+  it("11b. təkrar üretimdə dublikat qovluq açılmır, mövcud qovluq işlədilir", () => {
+    const { deps, rec } = makeFakes();
+    generateCertificate(deps, { ...validRow, refCode: "K7MPQ2X" }, ROW);
+
+    // Qovluq adı koda bağlıdır — adapter eyni adlı qovluğu tapıb işlədir.
+    expect(rec.folders).toEqual(["K7MPQ2X — Qüllə kran KB-403"]);
+    expect(rec.placed).toHaveLength(1);
   });
 
   it("12. azərbaycan sertifikatında nəticə azərbaycanca yazılır", () => {

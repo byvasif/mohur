@@ -66,7 +66,7 @@ export interface Recorded {
   truncations: Array<{ docId: string; breaks: number }>;
   pdfs: Array<{ docId: string; name: string; id: string }>;
   folders: string[];
-  moves: Array<{ fileId: string; folderId: string }>;
+  placed: Array<{ folderId: string; fileIds: string[] }>;
   removed: string[];
 }
 
@@ -91,7 +91,7 @@ export const makeFakes = (options: FakeOptions = {}) => {
     truncations: [],
     pdfs: [],
     folders: [],
-    moves: [],
+    placed: [],
     removed: [],
   };
   let counter = 0;
@@ -131,12 +131,12 @@ export const makeFakes = (options: FakeOptions = {}) => {
   };
 
   const drive: DrivePort = {
-    createFolder: (name) => {
+    ensureFolder: (name) => {
       const id = nextId("FOLDER");
       rec.folders.push(name);
       return id;
     },
-    move: (fileId, folderId) => void rec.moves.push({ fileId, folderId }),
+    placeFiles: (folderId, fileIds) => void rec.placed.push({ folderId, fileIds }),
     url: (fileId) => `https://drive.example/${fileId}`,
   };
 

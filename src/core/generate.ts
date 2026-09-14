@@ -140,8 +140,8 @@ export const generateCertificate = (
 
     // ⑧ Qovluq ƏN SONDA
     step = "qovluq açılarkən";
-    const folderId = drive.createFolder(folderName(code, row.equipment));
-    for (const fileId of created) drive.move(fileId, folderId);
+    const folderId = drive.ensureFolder(folderName(code, row.equipment));
+    drive.placeFiles(folderId, created);
 
     // ⑨ Geri yazma
     step = "cədvələ geri yazılarkən";
