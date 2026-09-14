@@ -36,8 +36,11 @@ export const createDocPort = (): DocPort => ({
 
       const element = found.getElement();
       const paragraph = element.getParent().asParagraph();
-      // Əvvəlcə yer tutucu mətni silinir, sonra onun yerinə şəkil qoyulur.
-      paragraph.setText("");
+
+      // Abzas boşaldılır, sonra şəkil qoyulur.
+      // DİQQƏT: setText("") İŞLƏMİR — Apps Script «Cannot insert an empty
+      // text element» xətası atır. Boşaltmaq üçün clear() işlədilməlidir.
+      paragraph.clear();
       paragraph.appendInlineImage(blob).setWidth(110).setHeight(110);
       return true;
     };

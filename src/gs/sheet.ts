@@ -1,4 +1,5 @@
 import type { JournalEntry, RowPatch, SheetPort } from "@/core/ports";
+import { formatDateCell } from "@/core/validate";
 import type { CertificateRow, MappingRow, TemplateRow } from "@/core/types";
 
 /** Sekmə adları — cədvəldə məhz belə adlanmalıdır. */
@@ -58,6 +59,15 @@ const headerIndex = (sheet: Sheet): Map<string, number> => {
   return map;
 };
 
+/**
+ * Xananı domen mətninə çevirir.
+ *
+ * Tarix xanaları Date obyekti kimi gəlir — Sheets «14.09.2026» yazısını
+ * avtomatik çevirir. Sadə String() burada yanlış nəticə verir.
+ */
+const cellToString = (value: unknown): string =>
+  value instanceof Date ? formatDateCell(value) : String(value ?? "").trim();
+
 /** Cədvəldəki bir sətri `CertificateRow`-a çevirir. */
 export const readRow = (rowNumber: number): CertificateRow => {
   const sheet = sheetByName(SHEETS.data);
@@ -67,7 +77,7 @@ export const readRow = (rowNumber: number): CertificateRow => {
   const row = {} as CertificateRow;
   for (const [header, field] of Object.entries(HEADERS)) {
     const column = index.get(header);
-    row[field] = column ? String(values[column - 1] ?? "").trim() : "";
+    row[field] = column ? cellToString(values[column - 1]) : "";
   }
   return row;
 };

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { validateRow } from "@/core/validate";
+import { parseDate, validateRow } from "@/core/validate";
 import type { CertificateRow } from "@/core/types";
 
 const ok: CertificateRow = {
@@ -104,5 +104,21 @@ describe("generateCode", () => {
     expect(() => generateCode(new Set([only]), seq(0), { maxAttempts: 3 })).toThrow(
       /təkrarsız kod/i,
     );
+  });
+});
+
+import { formatDateCell } from "@/core/validate";
+
+describe("formatDateCell", () => {
+  it("Sheets Date xanasını dd.MM.yyyy edir", () => {
+    expect(formatDateCell(new Date(2026, 8, 14))).toBe("14.09.2026");
+  });
+
+  it("tək rəqəmli gün və ayı sıfırla doldurur", () => {
+    expect(formatDateCell(new Date(2026, 0, 5))).toBe("05.01.2026");
+  });
+
+  it("çıxışı validateRow-un qəbul etdiyi formatdadır", () => {
+    expect(parseDate(formatDateCell(new Date(2027, 11, 31)))).not.toBeNull();
   });
 });

@@ -58,3 +58,17 @@ export const validateRow = (row: CertificateRow): ValidationError[] => {
 
   return errors;
 };
+
+/**
+ * Google Sheets tarix xanasını `dd.MM.yyyy` mətninə çevirir.
+ *
+ * Sheets «14.09.2026» yazısını avtomatik olaraq Date obyektinə çevirir və
+ * getValues() mətn yox, Date qaytarır. String(date) isə
+ * «Mon Sep 14 2026 00:00:00 GMT+0400» verir — bizim format deyil.
+ * Adaptör bu funksiya ilə Sheets həqiqətini domen mətninə çevirir.
+ */
+export const formatDateCell = (value: Date): string => {
+  const day = String(value.getDate()).padStart(2, "0");
+  const month = String(value.getMonth() + 1).padStart(2, "0");
+  return `${day}.${month}.${value.getFullYear()}`;
+};
