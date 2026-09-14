@@ -4,6 +4,7 @@ import { bootstrapSheets } from "./bootstrap";
 import { createDocPort } from "./doc";
 import { createDrivePort, createQrPort } from "./drive";
 import { SHEETS, createSheetPort, readRow } from "./sheet";
+import { createTemplates } from "./templates";
 
 /** Sistemi işə salan status dəyəri. Digər dəyərlər heç nə etmir. */
 const TRIGGER_VALUE = "Hazır";
@@ -75,4 +76,19 @@ export function setup(): void {
       ? `Sekmələr quruldu: ${created.join(", ")}. İndi «Şablonlar» sekməsinə Doc ID-lərini yaz.`
       : "Sekmələr artıq var, toxunulmadı. Tetikleyici yeniləndi.";
   spreadsheet.toast(message, "Möhür", 8);
+}
+
+/**
+ * Hər iki şablon sənədini qurur və ID-lərini «Şablonlar» sekməsinə yazır.
+ *
+ * Səhifə sonları proqramla qoyulur — əl ilə qoymaq ən çox səhv çıxan yerdir.
+ * Bir dəfə işə salınır; təkrar çağırılsa YENİ sənədlər yaranır.
+ */
+export function buildTemplates(): void {
+  const built = createTemplates();
+  SpreadsheetApp.getActive().toast(
+    `Şablonlar quruldu — ${built.join(", ")}. ID-lər «Şablonlar» sekməsinə yazıldı.`,
+    "Möhür",
+    8,
+  );
 }

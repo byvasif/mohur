@@ -23,6 +23,7 @@ const GLOBAL = "Mohur";
 const ENTRY_POINTS = [
   { name: "onStatusEdit", params: "e" },
   { name: "setup", params: "" },
+  { name: "buildTemplates", params: "" },
 ];
 
 const manifest = {
