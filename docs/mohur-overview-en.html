@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Möhür — Certificate Generation System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;700&display=swap">
+<style>
+:root{
+  --paper:#FFFFFF;
+  --panel:#F2F2ED;
+  --panel2:#E9E9E2;
+  --ink:#17191B;
+  --muted:#5C6065;
+  --rule:#C7C7BF;
+  --hair:#DEDED7;
+  --stamp:#3A2E78;
+  --pass:#1D6B41;
+  --fail:#9E2B20;
+}
+@page{ size:A4; margin:17mm 15mm 16mm 15mm; }
+*{ box-sizing:border-box; }
+html{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:"Source Serif 4",Georgia,"Times New Roman",serif;
+  font-size:10.2pt; line-height:1.52;
+  font-variant-numeric:tabular-nums;
+  orphans:2; widows:2;
+}
+h1,h2,h3,.sans{ font-family:Archivo,"Helvetica Neue",Arial,sans-serif; }
+code,.mono{ font-family:"JetBrains Mono","SF Mono",Menlo,monospace; }
+
+/* ── masthead ── */
+.masthead{ display:flex; justify-content:space-between; align-items:flex-end; gap:12mm; }
+.brand h1{
+  font-size:31pt; font-weight:700; letter-spacing:-.018em; margin:0; line-height:.95;
+}
+.brand .sub{
+  font-family:Archivo,sans-serif; font-size:9.4pt; font-weight:600;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--stamp); margin-top:3.5mm;
+}
+.brand .gloss{ font-size:9pt; color:var(--muted); margin-top:1.6mm; font-style:italic; }
+.docmeta{ font-family:"JetBrains Mono",monospace; font-size:6.9pt; color:var(--muted); text-align:right; line-height:1.85; white-space:nowrap; }
+.docmeta b{ color:var(--ink); font-weight:700; }
+.rules{ margin:4.5mm 0 0; border-top:1.7pt solid var(--ink); }
+.rules::after{ content:""; display:block; border-top:.5pt solid var(--rule); margin-top:1.1mm; }
+
+.lead{
+  font-size:13pt; line-height:1.42; margin:7mm 0 0; max-width:150mm;
+  font-weight:600; letter-spacing:-.005em;
+}
+.lead em{ color:var(--stamp); font-style:normal; }
+
+/* ── clause sections ── */
+section{ position:relative; margin-top:8.5mm; break-inside:auto; }
+section > .num{
+  position:absolute; left:0; top:1.4mm;
+  font-family:"JetBrains Mono",monospace; font-size:7.6pt; font-weight:700;
+  color:var(--stamp); letter-spacing:.03em;
+}
+section > .body{ margin-left:20mm; }
+h2{
+  break-after:avoid; font-size:12.4pt; font-weight:700; margin:0 0 2.6mm; letter-spacing:-.012em;
+  padding-bottom:1.5mm; border-bottom:.5pt solid var(--hair);
+}
+h3{ break-after:avoid; font-size:9.6pt; font-weight:600; margin:5mm 0 2mm; letter-spacing:.02em; }
+p{ margin:0 0 2.6mm; max-width:148mm; }
+p:last-child{ margin-bottom:0; }
+.small{ font-size:9pt; color:var(--muted); }
+
+/* ── tables ── */
+table{ width:100%; border-collapse:collapse; margin:3mm 0 0; font-size:9.1pt; break-inside:auto; }
+tr{ break-inside:avoid; }
+thead{ display:table-header-group; }
+th{
+  font-family:Archivo,sans-serif; font-size:7.3pt; font-weight:600; text-transform:uppercase;
+  letter-spacing:.11em; color:var(--muted); text-align:left;
+  padding:0 3mm 1.6mm 0; border-bottom:.9pt solid var(--ink);
+}
+td{ padding:2mm 3mm 2mm 0; border-bottom:.4pt solid var(--hair); vertical-align:top; }
+tr:last-child td{ border-bottom:none; }
+td.k{ font-weight:600; width:26%; }
+td.mono{ font-size:8.4pt; }
+
+/* ── worked example form ── */
+.form{ background:var(--panel); padding:5mm 5.5mm; margin-top:3mm; break-inside:avoid; }
+.form .cap{
+  font-family:Archivo,sans-serif; font-size:7.3pt; font-weight:600; text-transform:uppercase;
+  letter-spacing:.11em; color:var(--muted); margin-bottom:3mm;
+}
+.field{ display:flex; align-items:baseline; gap:2mm; margin-bottom:1.9mm; }
+.field .lbl{ font-size:8.8pt; color:var(--muted); white-space:nowrap; }
+.field .dots{ flex:1; border-bottom:.4pt dotted #9C9C93; transform:translateY(-1mm); min-width:6mm; }
+.field .val{ font-family:"JetBrains Mono",monospace; font-size:8.8pt; font-weight:700; white-space:nowrap; }
+.form.auto{ background:var(--panel2); }
+.form.auto .val{ color:var(--stamp); }
+
+/* ── chips ── */
+.chip{
+  display:inline-block; font-family:Archivo,sans-serif; font-size:7.4pt; font-weight:600;
+  letter-spacing:.09em; text-transform:uppercase; padding:.9mm 2.2mm;
+  border:.7pt solid currentColor; color:var(--ink);
+}
+.chip.go{ color:var(--stamp); }
+.chip.ok{ color:var(--pass); }
+.chip.no{ color:var(--fail); }
+.flow{ display:flex; align-items:center; gap:2.6mm; margin:3mm 0 0; flex-wrap:wrap; }
+.flow .arw{ color:var(--muted); font-size:9pt; }
+
+/* ── steps ── */
+.step{ margin-top:4.5mm; break-inside:avoid; }
+.step .hd{ display:flex; align-items:baseline; gap:2.5mm; margin-bottom:1.5mm; }
+.step .n{
+  font-family:"JetBrains Mono",monospace; font-size:7.6pt; font-weight:700; color:#fff;
+  background:var(--stamp); padding:.7mm 1.8mm;
+}
+.step .t{ font-family:Archivo,sans-serif; font-weight:600; font-size:10pt; }
+
+/* ── file tree ── */
+.tree{
+  font-family:"JetBrains Mono",monospace; font-size:7.9pt; line-height:1.75;
+  background:var(--panel); padding:4.5mm 5mm; margin-top:3mm; white-space:pre;
+  overflow-x:auto; break-inside:avoid;
+}
+.tree .dim{ color:var(--muted); }
+.tree .hi{ color:var(--stamp); font-weight:700; }
+
+/* ── qr block ── */
+.qr{ display:flex; gap:6mm; align-items:flex-start; margin-top:3mm; break-inside:avoid; }
+.qr img{ width:28mm; height:28mm; border:.5pt solid var(--rule); }
+.qr .pay{
+  font-family:"JetBrains Mono",monospace; font-size:8pt; line-height:1.75;
+  background:var(--panel); padding:3.5mm 4mm; white-space:pre; flex:1; min-width:0;
+}
+.qr .pay b{ color:var(--stamp); }
+
+/* ── guarantees ── */
+.guards{ display:grid; grid-template-columns:1fr 1fr; gap:3.5mm 6mm; margin-top:3mm; }
+.guard{ break-inside:avoid; }
+.guard .gt{
+  font-family:Archivo,sans-serif; font-size:9.3pt; font-weight:600; margin-bottom:1.2mm;
+  padding-left:2.6mm; border-left:1.6pt solid var(--stamp);
+}
+.guard p{ font-size:8.9pt; margin:0; padding-left:2.6mm; color:var(--muted); }
+
+/* ── split lists ── */
+.split{ display:grid; grid-template-columns:1fr 1fr; gap:6mm; margin-top:3mm; }
+.split h3{ margin-top:0; padding-bottom:1.4mm; border-bottom:.5pt solid var(--hair); }
+ul{ margin:0; padding-left:4.2mm; }
+li{ margin-bottom:1.4mm; font-size:9.2pt; }
+li:last-child{ margin-bottom:0; }
+li code{ font-size:8.3pt; }
+code{ background:var(--panel); padding:.3mm 1mm; font-size:8.6pt; }
+
+/* ── callout ── */
+.note{ border-left:1.6pt solid var(--rule); padding-left:4mm; margin-top:3.5mm; font-size:9.1pt; color:var(--muted); break-inside:avoid; }
+.note b{ color:var(--ink); }
+
+footer{
+  margin-top:11mm; padding-top:2.5mm; border-top:.5pt solid var(--rule);
+  display:flex; justify-content:space-between;
+  font-family:"JetBrains Mono",monospace; font-size:6.9pt; color:var(--muted);
+}
+
+@media screen{
+  body{ max-width:198mm; margin:0 auto; padding:14mm 12mm; }
+  .tree,.qr .pay{ overflow-x:auto; }
+}
+</style>
+</head>
+<body>
+<div class="masthead">
+  <div class="brand">
+    <h1>Möhür</h1>
+    <div class="sub">Certificate generation system</div>
+    <div class="gloss">möhür — Azerbaijani for “seal, stamp”: the mark that makes a document official.</div>
+  </div>
+  <div class="docmeta">
+    DATE .......... <b>15.09.2026</b><br>
+    STATUS ........ <b>IN PRODUCTION</b><br>
+    PLATFORM ...... Google Workspace<br>
+    RUNTIME ....... Apps Script<br>
+    FIRST DOC ..... <b>F3B5DR5</b>
+  </div>
+</div>
+<div class="rules"></div>
+
+<p class="lead">You write one row in a spreadsheet. The system turns that row into a certificate that is
+<em>numbered, carries a QR code, exists as a PDF and is filed</em>. Nobody touches it in between.</p>
+
+<section>
+  <div class="num">§ 01</div>
+  <div class="body">
+    <h2>The problem it solves</h2>
+    <p>Organisations that inspect, test, calibrate or train issue a document at the end of every job.
+    That document needs a unique number, the number must never appear on a second document, the file
+    has to survive as a PDF, and somebody has to be able to find it years later.</p>
+    <p>In most places this is done by hand: copy the template, fill the fields, look up the next number
+    in a register, export to PDF, move the file into a folder. Every step depends on a person.
+    Duplicate numbers, empty fields and wrong dates are therefore not the exception but the normal
+    outcome — and they usually surface at the worst possible moment, when an auditor is reading the
+    document.</p>
+    <p>Möhür reduces that entire chain to changing one cell.</p>
+  </div>
+</section>
+
+<section>
+  <div class="num">§ 02</div>
+  <div class="body">
+    <h2>By hand, and with Möhür</h2>
+    <table>
+      <tr><th>Step</th><th>By hand</th><th>With Möhür</th></tr>
+      <tr><td class="k">Number</td><td>Looked up in a register, typed in</td><td>Generated; reuse is not possible</td></tr>
+      <tr><td class="k">Document</td><td>Template copied, fields filled one by one</td><td>Filled from the row</td></tr>
+      <tr><td class="k">Short version</td><td>Prepared a second time, separately</td><td>Produced in the same pass</td></tr>
+      <tr><td class="k">PDF</td><td>Exported manually</td><td>Automatic</td></tr>
+      <tr><td class="k">QR code</td><td>Absent, or made on a website and pasted in</td><td>Placed into the document</td></tr>
+      <tr><td class="k">Filing</td><td>Folder created, four files moved into it</td><td>Per-certificate folder, files land in it</td></tr>
+      <tr><td class="k">Retrieval</td><td>Search the drive</td><td>Code, folder and PDF link sit in the row</td></tr>
+      <tr><td class="k">Time</td><td>15–20 minutes</td><td>About 30 seconds</td></tr>
+      <tr><td class="k">Missing data</td><td>Document is produced anyway, incomplete</td><td>Nothing is produced; the reason is written back</td></tr>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="num">§ 03</div>
+  <div class="body">
+    <h2>How it works</h2>
+    <p>The run below is not a mock-up — it is the first certificate the system produced in production.
+    Only the client company and inspector names are <b>sample values</b> chosen for this document;
+    it is not a record of a real inspection.</p>
+
+    <div class="step">
+      <div class="hd"><span class="n">1</span><span class="t">Fill the row — nine fields</span></div>
+      <div class="form">
+        <div class="cap">What the person types</div>
+        <div class="field"><span class="lbl">Language</span><span class="dots"></span><span class="val">en</span></div>
+        <div class="field"><span class="lbl">Equipment</span><span class="dots"></span><span class="val">Qüllə kran KB-403</span></div>
+        <div class="field"><span class="lbl">Serial</span><span class="dots"></span><span class="val">KB403-11927</span></div>
+        <div class="field"><span class="lbl">Manufacturer</span><span class="dots"></span><span class="val">Bakı Maşınqayırma</span></div>
+        <div class="field"><span class="lbl">Client</span><span class="dots"></span><span class="val">Xəzər Tikinti MMC</span></div>
+        <div class="field"><span class="lbl">Test date</span><span class="dots"></span><span class="val">14.09.2026</span></div>
+        <div class="field"><span class="lbl">Next inspection</span><span class="dots"></span><span class="val">14.09.2027</span></div>
+        <div class="field"><span class="lbl">Inspector</span><span class="dots"></span><span class="val">R. Əliyev</span></div>
+        <div class="field"><span class="lbl">Result</span><span class="dots"></span><span class="val">PASS</span></div>
+      </div>
+      <p class="note"><b>The reference-code column is left empty.</b> The number is issued by the system,
+      not by a person — letting a person assign it is exactly what makes reuse possible.
+      Column headings are configurable; this deployment runs them in Azerbaijani.</p>
+    </div>
+
+    <div class="step">
+      <div class="hd"><span class="n">2</span><span class="t">Type one word into the status cell</span></div>
+      <div class="flow">
+        <span class="chip go">Hazır</span>
+        <span class="small">“ready”</span>
+        <span class="arw">→</span>
+        <span class="small">the system runs, ~30 s</span>
+        <span class="arw">→</span>
+        <span class="chip ok">Verilib</span>
+        <span class="small">“issued”, or</span>
+        <span class="chip no">Xəta</span>
+        <span class="small">“error”</span>
+      </div>
+      <p class="note">No other value starts the system. The result is written back into the same cell,
+      and neither <code>Verilib</code> nor <code>Xəta</code> re-arms the trigger, so the run cannot loop.</p>
+    </div>
+
+    <div class="step">
+      <div class="hd"><span class="n">3</span><span class="t">The system writes back into the row</span></div>
+      <div class="form auto">
+        <div class="cap">What the system writes — no one edits this by hand</div>
+        <div class="field"><span class="lbl">Reference code</span><span class="dots"></span><span class="val">F3B5DR5</span></div>
+        <div class="field"><span class="lbl">Folder link</span><span class="dots"></span><span class="val">drive.google.com/…/10jE9ls</span></div>
+        <div class="field"><span class="lbl">PDF link</span><span class="dots"></span><span class="val">drive.google.com/…/1MzsI7n</span></div>
+        <div class="field"><span class="lbl">Issued at</span><span class="dots"></span><span class="val">14.09.2026 21:52</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="num">§ 04</div>
+  <div class="body">
+    <h2>What comes out</h2>
+    <p>One row yields four files and the folder that holds them. The folder name is built from the code
+    and the equipment, so whoever searches the archive knows what they are looking at without opening
+    anything.</p>
+    <div class="tree"><span class="dim">Drive/</span>
+└── <span class="dim">Möhür — sertifikatlar/</span>
+    └── <span class="hi">F3B5DR5 — Qüllə kran KB-403/</span>
+        ├── F3B5DR5 — Qüllə kran KB-403 (tam)          <span class="dim">Google Doc · full</span>
+        ├── F3B5DR5 — Qüllə kran KB-403 (tam).pdf      <span class="dim">86 KB · 4 pages</span>
+        ├── F3B5DR5 — Qüllə kran KB-403 (qısa)         <span class="dim">Google Doc · short</span>
+        └── F3B5DR5 — Qüllə kran KB-403 (qısa).pdf     <span class="dim">78 KB · 2 pages</span></div>
+
+    <h3>Why a short version exists</h3>
+    <p>The full certificate runs to four pages with its annexes, but a client, an insurer or a site
+    entrance usually needs only the first two. The system produces both in the same pass, so the two
+    documents can never disagree about the data.</p>
+
+    <h3>What the QR carries</h3>
+    <p>The QR on page one carries the text below. Anyone scanning it sees which machine was tested,
+    for which company and when, without opening the document. The format is deliberately
+    machine-readable and the field names are in English: the certificate is issued in two languages,
+    but whoever scans the code should not need to know either of them.</p>
+    <div class="qr">
+      <img src="data:image/png;base64,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" alt="QR code of certificate F3B5DR5">
+      <div class="pay"><b>EQUIPMENT</b>=Qüllə kran KB-403
+<b>COMPANY</b>=Xəzər Tikinti MMC
+<b>TEST_DATE</b>=14.09.2026
+<b>REF</b>=F3B5DR5</div>
+    </div>
+    <p class="note">The square is a working QR code — scan it. It belongs to certificate
+    <b>F3B5DR5</b>, produced by the live system.</p>
+  </div>
+</section>
+
+<section>
+  <div class="num">§ 05</div>
+  <div class="body">
+    <h2>Four rules</h2>
+    <p>What makes a document system usable is not its speed but its refusal to produce a wrong
+    document. These four rules hold under every condition.</p>
+    <div class="guards">
+      <div class="guard">
+        <div class="gt">A number is never reused</div>
+        <p>Every issued code is written to a separate log. Each new code is checked against that log;
+        if a collision cannot be resolved the system stops and reports it rather than issuing the
+        same number twice.</p>
+      </div>
+      <div class="guard">
+        <div class="gt">No half-finished document</div>
+        <p>If anything fails mid-run, every file created up to that point is removed. A partially
+        filled official document is worse than no document at all.</p>
+      </div>
+      <div class="guard">
+        <div class="gt">The template is never touched</div>
+        <p>The system always works on a copy. After hundreds of certificates the original template is
+        byte-for-byte what it was on day one.</p>
+      </div>
+      <div class="guard">
+        <div class="gt">No QR, no certificate</div>
+        <p>If the code cannot be fetched, nothing is produced. A certificate without its QR looks
+        verifiable while being impossible to verify — the most dangerous of the failure modes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="num">§ 06</div>
+  <div class="body">
+    <h2>What you configure, what needs code</h2>
+    <p>The shape of the system is not buried in the source. Templates, placeholders and languages
+    live in their own sheet tabs — that is the part you can change without calling a developer.</p>
+    <div class="split">
+      <div>
+        <h3>Done from the sheet</h3>
+        <ul>
+          <li>Add a template</li>
+          <li>Add a language</li>
+          <li>Move a field around the template</li>
+          <li>Change the result wording — <code>PASS=CONFORMS</code></li>
+          <li>Set the page the short version is cut at</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Needs code</h3>
+        <ul>
+          <li>Add a genuinely new data field (“Pressure”, say)</li>
+          <li>Change how files and folders are named</li>
+          <li>Change which fields the QR carries</li>
+        </ul>
+        <p class="small" style="margin-top:2.5mm">The system refuses an invented column; a field has
+        to be declared first. That is deliberate — it stops a typo from producing a certificate with
+        a blank on it.</p>
+      </div>
+    </div>
+    <p class="note">How the second language is set up sums the design up: the English certificate
+    needs <b>one row</b> in the sheet — <code>PASS=CONFORMS;FAIL=DOES NOT CONFORM</code>. Every other
+    field is inherited from the base language. A third language is a handful of rows, not a code change.</p>
+  </div>
+</section>
+
+<section>
+  <div class="num">§ 07</div>
+  <div class="body">
+    <h2>Adapting it to other fields</h2>
+    <p>The system was built for crane inspection, but what it does is not specific to that trade:
+    <i>a number that never repeats, a scannable QR, a PDF, and an orderly archive.</i> Any document
+    that needs those four runs on the same core; only the column names and the template change.</p>
+    <table>
+      <tr><th>Field</th><th>What sits in the row</th><th>Document produced</th></tr>
+      <tr><td class="k">Calibration lab</td><td>Instrument, serial, measuring range, deviation, validity</td><td>Calibration certificate</td></tr>
+      <tr><td class="k">Fire / safety audit</td><td>Building, auditor, findings, next audit</td><td>Compliance report</td></tr>
+      <tr><td class="k">Training provider</td><td>Participant, course, hours, date, grade</td><td>Certificate of attendance</td></tr>
+      <tr><td class="k">Service / maintenance</td><td>Vehicle, plate, work done, parts list</td><td>Service record</td></tr>
+      <tr><td class="k">Laboratory</td><td>Sample, method, result, analyst</td><td>Analysis report</td></tr>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="num">§ 08</div>
+  <div class="body">
+    <h2>Technical limits</h2>
+    <p>What follows are not shortcomings but facts about the platform. Knowing them before a build
+    is better than discovering them during one.</p>
+
+    <h3>Google Docs has no page model</h3>
+    <p>The API sees a document as one flat stream; pagination is decided when the document is
+    rendered. “The first two pages” is therefore only well defined if the template contains an
+    <b>explicit page break</b>. If it relies on automatic pagination, the cut point moves as the
+    content grows. On any build that wants a short version, this is the first question to settle.</p>
+
+    <h3>The QR comes from outside</h3>
+    <p>Apps Script has no QR generator, so the image must be fetched from a third-party service.
+    That makes the script dependent on someone else at runtime. Rather than hide that, the system
+    turns it into a rule: if the service does not answer, no certificate is produced.</p>
+
+    <h3>Date cells are not text</h3>
+    <p>A date typed into the sheet looks like <code>14.09.2026</code> but is stored as a date object,
+    and reading it directly returns something else entirely. The system converts it explicitly.
+    A small detail — and the one most likely to produce a quietly wrong document.</p>
+  </div>
+</section>
+
+<footer>
+  <span>MÖHÜR · CERTIFICATE GENERATION SYSTEM</span>
+  <span>github.com/byvasif/mohur</span>
+</footer>
+</body>
+</html>
