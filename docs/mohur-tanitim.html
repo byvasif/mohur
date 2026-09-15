@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Möhür — Sertifika Üretim Sistemi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;700&display=swap">
+<style>
+:root{
+  --paper:#FFFFFF;
+  --panel:#F2F2ED;
+  --panel2:#E9E9E2;
+  --ink:#17191B;
+  --muted:#5C6065;
+  --rule:#C7C7BF;
+  --hair:#DEDED7;
+  --stamp:#3A2E78;
+  --pass:#1D6B41;
+  --fail:#9E2B20;
+}
+@page{ size:A4; margin:17mm 15mm 16mm 15mm; }
+*{ box-sizing:border-box; }
+html{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:"Source Serif 4",Georgia,"Times New Roman",serif;
+  font-size:10.2pt; line-height:1.52;
+  font-variant-numeric:tabular-nums;
+  orphans:2; widows:2;
+}
+h1,h2,h3,.sans{ font-family:Archivo,"Helvetica Neue",Arial,sans-serif; }
+code,.mono{ font-family:"JetBrains Mono","SF Mono",Menlo,monospace; }
+
+/* ── masthead ── */
+.masthead{ display:flex; justify-content:space-between; align-items:flex-end; gap:12mm; }
+.brand h1{
+  font-size:31pt; font-weight:700; letter-spacing:-.018em; margin:0; line-height:.95;
+}
+.brand .sub{
+  font-family:Archivo,sans-serif; font-size:9.4pt; font-weight:600;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--stamp); margin-top:3.5mm;
+}
+.brand .gloss{ font-size:9pt; color:var(--muted); margin-top:1.6mm; font-style:italic; }
+.docmeta{ font-family:"JetBrains Mono",monospace; font-size:6.9pt; color:var(--muted); text-align:right; line-height:1.85; white-space:nowrap; }
+.docmeta b{ color:var(--ink); font-weight:700; }
+.rules{ margin:4.5mm 0 0; border-top:1.7pt solid var(--ink); }
+.rules::after{ content:""; display:block; border-top:.5pt solid var(--rule); margin-top:1.1mm; }
+
+.lead{
+  font-size:13pt; line-height:1.42; margin:7mm 0 0; max-width:150mm;
+  font-weight:600; letter-spacing:-.005em;
+}
+.lead em{ color:var(--stamp); font-style:normal; }
+
+/* ── clause sections ── */
+section{ position:relative; margin-top:8.5mm; break-inside:auto; }
+section > .num{
+  position:absolute; left:0; top:1.4mm;
+  font-family:"JetBrains Mono",monospace; font-size:7.6pt; font-weight:700;
+  color:var(--stamp); letter-spacing:.03em;
+}
+section > .body{ margin-left:20mm; }
+h2{
+  break-after:avoid; font-size:12.4pt; font-weight:700; margin:0 0 2.6mm; letter-spacing:-.012em;
+  padding-bottom:1.5mm; border-bottom:.5pt solid var(--hair);
+}
+h3{ break-after:avoid; font-size:9.6pt; font-weight:600; margin:5mm 0 2mm; letter-spacing:.02em; }
+p{ margin:0 0 2.6mm; max-width:148mm; }
+p:last-child{ margin-bottom:0; }
+.small{ font-size:9pt; color:var(--muted); }
+
+/* ── tables ── */
+table{ width:100%; border-collapse:collapse; margin:3mm 0 0; font-size:9.1pt; break-inside:auto; }
+tr{ break-inside:avoid; }
+thead{ display:table-header-group; }
+th{
+  font-family:Archivo,sans-serif; font-size:7.3pt; font-weight:600; text-transform:uppercase;
+  letter-spacing:.11em; color:var(--muted); text-align:left;
+  padding:0 3mm 1.6mm 0; border-bottom:.9pt solid var(--ink);
+}
+td{ padding:2mm 3mm 2mm 0; border-bottom:.4pt solid var(--hair); vertical-align:top; }
+tr:last-child td{ border-bottom:none; }
+td.k{ font-weight:600; width:26%; }
+td.mono{ font-size:8.4pt; }
+
+/* ── worked example form ── */
+.form{ background:var(--panel); padding:5mm 5.5mm; margin-top:3mm; break-inside:avoid; }
+.form .cap{
+  font-family:Archivo,sans-serif; font-size:7.3pt; font-weight:600; text-transform:uppercase;
+  letter-spacing:.11em; color:var(--muted); margin-bottom:3mm;
+}
+.field{ display:flex; align-items:baseline; gap:2mm; margin-bottom:1.9mm; }
+.field .lbl{ font-size:8.8pt; color:var(--muted); white-space:nowrap; }
+.field .dots{ flex:1; border-bottom:.4pt dotted #9C9C93; transform:translateY(-1mm); min-width:6mm; }
+.field .val{ font-family:"JetBrains Mono",monospace; font-size:8.8pt; font-weight:700; white-space:nowrap; }
+.form.auto{ background:var(--panel2); }
+.form.auto .val{ color:var(--stamp); }
+
+/* ── chips ── */
+.chip{
+  display:inline-block; font-family:Archivo,sans-serif; font-size:7.4pt; font-weight:600;
+  letter-spacing:.09em; text-transform:uppercase; padding:.9mm 2.2mm;
+  border:.7pt solid currentColor; color:var(--ink);
+}
+.chip.go{ color:var(--stamp); }
+.chip.ok{ color:var(--pass); }
+.chip.no{ color:var(--fail); }
+.flow{ display:flex; align-items:center; gap:2.6mm; margin:3mm 0 0; flex-wrap:wrap; }
+.flow .arw{ color:var(--muted); font-size:9pt; }
+
+/* ── steps ── */
+.step{ margin-top:4.5mm; break-inside:avoid; }
+.step .hd{ display:flex; align-items:baseline; gap:2.5mm; margin-bottom:1.5mm; }
+.step .n{
+  font-family:"JetBrains Mono",monospace; font-size:7.6pt; font-weight:700; color:#fff;
+  background:var(--stamp); padding:.7mm 1.8mm;
+}
+.step .t{ font-family:Archivo,sans-serif; font-weight:600; font-size:10pt; }
+
+/* ── file tree ── */
+.tree{
+  font-family:"JetBrains Mono",monospace; font-size:7.9pt; line-height:1.75;
+  background:var(--panel); padding:4.5mm 5mm; margin-top:3mm; white-space:pre;
+  overflow-x:auto; break-inside:avoid;
+}
+.tree .dim{ color:var(--muted); }
+.tree .hi{ color:var(--stamp); font-weight:700; }
+
+/* ── qr block ── */
+.qr{ display:flex; gap:6mm; align-items:flex-start; margin-top:3mm; break-inside:avoid; }
+.qr img{ width:28mm; height:28mm; border:.5pt solid var(--rule); }
+.qr .pay{
+  font-family:"JetBrains Mono",monospace; font-size:8pt; line-height:1.75;
+  background:var(--panel); padding:3.5mm 4mm; white-space:pre; flex:1; min-width:0;
+}
+.qr .pay b{ color:var(--stamp); }
+
+/* ── guarantees ── */
+.guards{ display:grid; grid-template-columns:1fr 1fr; gap:3.5mm 6mm; margin-top:3mm; }
+.guard{ break-inside:avoid; }
+.guard .gt{
+  font-family:Archivo,sans-serif; font-size:9.3pt; font-weight:600; margin-bottom:1.2mm;
+  padding-left:2.6mm; border-left:1.6pt solid var(--stamp);
+}
+.guard p{ font-size:8.9pt; margin:0; padding-left:2.6mm; color:var(--muted); }
+
+/* ── split lists ── */
+.split{ display:grid; grid-template-columns:1fr 1fr; gap:6mm; margin-top:3mm; }
+.split h3{ margin-top:0; padding-bottom:1.4mm; border-bottom:.5pt solid var(--hair); }
+ul{ margin:0; padding-left:4.2mm; }
+li{ margin-bottom:1.4mm; font-size:9.2pt; }
+li:last-child{ margin-bottom:0; }
+li code{ font-size:8.3pt; }
+code{ background:var(--panel); padding:.3mm 1mm; font-size:8.6pt; }
+
+/* ── callout ── */
+.note{ border-left:1.6pt solid var(--rule); padding-left:4mm; margin-top:3.5mm; font-size:9.1pt; color:var(--muted); break-inside:avoid; }
+.note b{ color:var(--ink); }
+
+footer{
+  margin-top:11mm; padding-top:2.5mm; border-top:.5pt solid var(--rule);
+  display:flex; justify-content:space-between;
+  font-family:"JetBrains Mono",monospace; font-size:6.9pt; color:var(--muted);
+}
+
+@media screen{
+  body{ max-width:198mm; margin:0 auto; padding:14mm 12mm; }
+  .tree,.qr .pay{ overflow-x:auto; }
+}
+</style>
+</head>
+<body>
+<div class="masthead">
+  <div class="brand">
+    <h1>Möhür</h1>
+    <div class="sub">Sertifika üretim sistemi</div>
+    <div class="gloss">möhür — azərbaycanca “mühür, damga”: bir belgeyi resmî kılan iz.</div>
+  </div>
+  <div class="docmeta">
+    TARİH ......... <b>14.09.2026</b><br>
+    DURUM ......... <b>CANLIDA</b><br>
+    PLATFORM ...... Google Workspace<br>
+    ÇEKİRDEK ...... Apps Script<br>
+    İLK BELGE ..... <b>F3B5DR5</b>
+  </div>
+</div>
+<div class="rules"></div>
+
+<p class="lead">Bir tabloya satır yazarsınız. Sistem o satırdan <em>numarası olan, QR taşıyan,
+PDF’e dönüşmüş ve arşivlenmiş</em> bir sertifika üretir. Arada insan yoktur.</p>
+
+<section>
+  <div class="num">§ 01</div>
+  <div class="body">
+    <h2>Çözdüğü problem</h2>
+    <p>Muayene, test, kalibrasyon ve eğitim veren kuruluşlar her iş sonunda belge düzenler.
+    Bu belgenin tekil bir numarası olmalı, o numara başka hiçbir belgede tekrarlanmamalı,
+    belge PDF olarak saklanmalı ve yıllar sonra bulunabilmelidir.</p>
+    <p>Uygulamada iş çoğu yerde şöyle yürür: Word şablonu kopyalanır, alanlar elle doldurulur,
+    numara defterden bakılarak yazılır, “farklı kaydet” ile PDF alınır, dosya bir klasöre taşınır.
+    Her adım insana bağlıdır. Numara çakışması, boş kalmış alan ve yanlış tarih bu yüzden
+    istisna değil, olağan sonuçtur — ve hatanın ortaya çıktığı yer genellikle belgenin
+    denetimde okunduğu andır.</p>
+    <p>Möhür bu zincirin tamamını tek bir hücre değişikliğine indirir.</p>
+  </div>
+</section>
+
+<section>
+  <div class="num">§ 02</div>
+  <div class="body">
+    <h2>Elle nasıl, sistemle nasıl</h2>
+    <table>
+      <tr><th>Adım</th><th>Elle</th><th>Möhür ile</th></tr>
+      <tr><td class="k">Numara</td><td>Defterden bakılır, elle yazılır</td><td>Otomatik üretilir; tekrarlanması mümkün değil</td></tr>
+      <tr><td class="k">Belge</td><td>Şablon kopyalanır, alanlar tek tek doldurulur</td><td>Satırdaki verilerden doldurulur</td></tr>
+      <tr><td class="k">Kısa sürüm</td><td>İkinci kez, ayrıca hazırlanır</td><td>Aynı anda üretilir</td></tr>
+      <tr><td class="k">PDF</td><td>Elle dışa aktarılır</td><td>Otomatik</td></tr>
+      <tr><td class="k">QR</td><td>Yok; ya da dış siteden üretilip yapıştırılır</td><td>Belgeye basılır</td></tr>
+      <tr><td class="k">Arşiv</td><td>Klasör açılır, dört dosya taşınır</td><td>Sertifikaya özel klasör açılır, dosyalar yerleşir</td></tr>
+      <tr><td class="k">Geri izleme</td><td>Dosya aranır</td><td>Tabloda kod, klasör ve PDF linki hazır</td></tr>
+      <tr><td class="k">Süre</td><td>15–20 dakika</td><td>Yaklaşık 30 saniye</td></tr>
+      <tr><td class="k">Eksik veri</td><td>Belge yine de çıkar, eksik çıkar</td><td>Belge hiç üretilmez, sebebi yazılır</td></tr>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="num">§ 03</div>
+  <div class="body">
+    <h2>Nasıl çalışır</h2>
+    <p>Aşağıdaki akış uydurma değil — sistemin canlıda ürettiği ilk sertifikanın kendisidir. Yalnız firma ve müayinə edən adları tanıtım için seçilmiş <b>örnek değerlerdir</b>; gerçek bir muayene kaydı değildir.</p>
+
+    <div class="step">
+      <div class="hd"><span class="n">1</span><span class="t">Satırı doldurun — dokuz alan</span></div>
+      <div class="form">
+        <div class="cap">İnsanın yazdıkları · <code>Sertifikatlar</code> sekmesi</div>
+        <div class="field"><span class="lbl">Dil</span><span class="dots"></span><span class="val">en</span></div>
+        <div class="field"><span class="lbl">Avadanlıq</span><span class="dots"></span><span class="val">Qüllə kran KB-403</span></div>
+        <div class="field"><span class="lbl">Seriya</span><span class="dots"></span><span class="val">KB403-11927</span></div>
+        <div class="field"><span class="lbl">İstehsalçı</span><span class="dots"></span><span class="val">Bakı Maşınqayırma</span></div>
+        <div class="field"><span class="lbl">Sifarişçi</span><span class="dots"></span><span class="val">Xəzər Tikinti MMC</span></div>
+        <div class="field"><span class="lbl">Test tarixi</span><span class="dots"></span><span class="val">14.09.2026</span></div>
+        <div class="field"><span class="lbl">Növbəti müayinə</span><span class="dots"></span><span class="val">14.09.2027</span></div>
+        <div class="field"><span class="lbl">Müayinə edən</span><span class="dots"></span><span class="val">R. Əliyev</span></div>
+        <div class="field"><span class="lbl">Nəticə</span><span class="dots"></span><span class="val">PASS</span></div>
+      </div>
+      <p class="note"><b>Referans kodu sütunu boş bırakılır.</b> Numarayı insan değil sistem verir —
+      numarayı insanın vermesi, numaranın tekrarlanabilmesi demektir.</p>
+    </div>
+
+    <div class="step">
+      <div class="hd"><span class="n">2</span><span class="t">Durum hücresine tek kelime yazın</span></div>
+      <div class="flow">
+        <span class="chip go">Hazır</span>
+        <span class="arw">→</span>
+        <span class="small">sistem çalışır, ~30 saniye</span>
+        <span class="arw">→</span>
+        <span class="chip ok">Verilib</span>
+        <span class="small">ya da</span>
+        <span class="chip no">Xəta</span>
+      </div>
+      <p class="note">Başka hiçbir kelime sistemi çalıştırmaz. Sistem sonucu aynı hücreye
+      geri yazar; <code>Verilib</code> ve <code>Xəta</code> tetikleyiciyi yeniden başlatmaz,
+      dolayısıyla sonsuz döngü oluşmaz.</p>
+    </div>
+
+    <div class="step">
+      <div class="hd"><span class="n">3</span><span class="t">Sistem satıra geri yazar</span></div>
+      <div class="form auto">
+        <div class="cap">Sistemin yazdıkları — insan dokunmaz</div>
+        <div class="field"><span class="lbl">Referans kodu</span><span class="dots"></span><span class="val">F3B5DR5</span></div>
+        <div class="field"><span class="lbl">Qovluq linki</span><span class="dots"></span><span class="val">drive.google.com/…/10jE9ls</span></div>
+        <div class="field"><span class="lbl">PDF linki</span><span class="dots"></span><span class="val">drive.google.com/…/1MzsI7n</span></div>
+        <div class="field"><span class="lbl">Veriliş vaxtı</span><span class="dots"></span><span class="val">14.09.2026 21:52</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="num">§ 04</div>
+  <div class="body">
+    <h2>Ne üretiliyor</h2>
+    <p>Bir satırdan dört dosya ve onları tutan bir klasör çıkar. Klasörün adı koddan ve
+    ekipmandan kurulur; bu sayede arşivde arama yapan kişi dosyayı açmadan neye baktığını bilir.</p>
+    <div class="tree"><span class="dim">Drive/</span>
+└── <span class="dim">Möhür — sertifikatlar/</span>
+    └── <span class="hi">F3B5DR5 — Qüllə kran KB-403/</span>
+        ├── F3B5DR5 — Qüllə kran KB-403 (tam)          <span class="dim">Google Doc</span>
+        ├── F3B5DR5 — Qüllə kran KB-403 (tam).pdf      <span class="dim">86 KB · 4 sayfa</span>
+        ├── F3B5DR5 — Qüllə kran KB-403 (qısa)         <span class="dim">Google Doc</span>
+        └── F3B5DR5 — Qüllə kran KB-403 (qısa).pdf     <span class="dim">78 KB · 2 sayfa</span></div>
+
+    <h3>Kısa sürüm neden var</h3>
+    <p>Tam sertifika ekleriyle birlikte dört sayfadır; müşteriye, sigortaya ya da şantiye
+    girişine çoğu zaman yalnızca ilk iki sayfa gerekir. Sistem ikisini tek seferde üretir,
+    böylece iki farklı belge arasında veri farkı oluşmaz.</p>
+
+    <h3>QR ne taşıyor</h3>
+    <p>Sertifikanın birinci sayfasındaki QR, aşağıdaki metni taşır. Telefonla okutan kişi
+    belgeye bakmadan hangi cihazın, hangi firma için, ne zaman test edildiğini görür.
+    Biçim bilerek makine okunurdur ve alan adları İngilizcedir: sertifika iki dilde üretilir,
+    ama QR’ı okuyan tarafın dil bilmesi gerekmemelidir.</p>
+    <div class="qr">
+      <img src="data:image/png;base64,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" alt="Sertifika F3B5DR5 karekodu">
+      <div class="pay"><b>EQUIPMENT</b>=Qüllə kran KB-403
+<b>COMPANY</b>=Xəzər Tikinti MMC
+<b>TEST_DATE</b>=14.09.2026
+<b>REF</b>=F3B5DR5</div>
+    </div>
+    <p class="note">Yandaki kare gerçek bir karekoddur; telefonla okutabilirsiniz.
+    Sistemin canlıda ürettiği <b>F3B5DR5</b> numaralı sertifikaya aittir.</p>
+  </div>
+</section>
+
+<section>
+  <div class="num">§ 05</div>
+  <div class="body">
+    <h2>Dört kural</h2>
+    <p>Bir belge sistemini kullanılabilir kılan şey hızı değil, yanlış belge üretmemesidir.
+    Sistem dört kuralı hiçbir koşulda bozmaz.</p>
+    <div class="guards">
+      <div class="guard">
+        <div class="gt">Numara asla tekrarlanmaz</div>
+        <p>Verilmiş her kod ayrı bir deftere yazılır. Yeni kod bu deftere karşı sınanır;
+        çakışma çözülemezse sistem durur ve hata yazar. Aynı numarayı ikinci kez vermez.</p>
+      </div>
+      <div class="guard">
+        <div class="gt">Yarım belge üretilmez</div>
+        <p>Süreç ortasında bir aksama olursa o ana kadar oluşmuş dosyalar silinir.
+        Eksik doldurulmuş resmî belge, hiç olmayan belgeden kötüdür.</p>
+      </div>
+      <div class="guard">
+        <div class="gt">Şablona dokunulmaz</div>
+        <p>Sistem her zaman şablonun kopyası üzerinde çalışır. Asıl şablon yüzlerce
+        sertifikadan sonra da ilk günkü hâlindedir.</p>
+      </div>
+      <div class="guard">
+        <div class="gt">QR yoksa sertifika yoktur</div>
+        <p>Karekod üretilemezse belge hiç çıkmaz. QR’sız bir sertifika, doğrulanamayacağı
+        hâlde doğrulanabilir görünür — en tehlikelisi budur.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="num">§ 06</div>
+  <div class="body">
+    <h2>Neyi tablodan ayarlarsınız, neyi ayarlayamazsınız</h2>
+    <p>Sistemin şekli koda gömülü değildir. Şablon, yer tutucular ve diller ayrı sekmelerde
+    durur; yazılımcı çağırmadan değiştirebileceğiniz kısım budur.</p>
+    <div class="split">
+      <div>
+        <h3>Tablodan yapılır</h3>
+        <ul>
+          <li>Yeni şablon eklemek</li>
+          <li>Yeni dil eklemek</li>
+          <li>Şablondaki alanların yerini değiştirmek</li>
+          <li>Sonuç kelimelerini değiştirmek — <code>PASS=UYĞUNDUR</code></li>
+          <li>Kısa sürümün kaçıncı sayfada kesileceği</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Kod gerektirir</h3>
+        <ul>
+          <li>Tamamen yeni bir veri alanı eklemek (örneğin “Basınç”)</li>
+          <li>Dosya adlandırma düzenini değiştirmek</li>
+          <li>QR’ın taşıdığı alanları değiştirmek</li>
+        </ul>
+        <p class="small" style="margin-top:2.5mm">Sistem uydurma sütuna izin vermez; alan
+        önce tanımlanmalıdır. Bu kasıtlıdır — yazım hatası yüzünden boş çıkan sertifikayı
+        engeller.</p>
+      </div>
+    </div>
+    <p class="note">İki dilin nasıl kurulduğu bu tasarımı özetler: İngilizce sertifika için
+    tabloya yazılan <b>tek satır</b> vardır — <code>PASS=CONFORMS;FAIL=DOES NOT CONFORM</code>.
+    Geri kalan her alan Azerbaycanca kurulumdan miras alınır. Üçüncü bir dil eklemek birkaç
+    satır iştir, kod değişmez.</p>
+  </div>
+</section>
+
+<section>
+  <div class="num">§ 07</div>
+  <div class="body">
+    <h2>Başka alanlara uyarlama</h2>
+    <p>Sistem vinç muayenesi için kurulmuştur, ama yaptığı iş sektöre özel değildir:
+    <i>tekrarlanmayan numara, doğrulanabilir QR, PDF ve düzenli arşiv.</i> Bu dördüne
+    ihtiyaç duyan her belge aynı çekirdeği kullanır; değişen yalnızca sütun isimleri
+    ve şablondur.</p>
+    <table>
+      <tr><th>Alan</th><th>Satırda ne durur</th><th>Çıkan belge</th></tr>
+      <tr><td class="k">Kalibrasyon lab.</td><td>Cihaz, seri, ölçüm aralığı, sapma, geçerlilik</td><td>Kalibrasyon sertifikası</td></tr>
+      <tr><td class="k">İş sağlığı / yangın</td><td>Bina, denetçi, bulgular, sonraki denetim</td><td>Uygunluk raporu</td></tr>
+      <tr><td class="k">Eğitim kurumu</td><td>Katılımcı, kurs, saat, tarih, not</td><td>Katılım sertifikası</td></tr>
+      <tr><td class="k">Servis / bakım</td><td>Araç, plaka, yapılan iş, parça listesi</td><td>Bakım belgesi</td></tr>
+      <tr><td class="k">Laboratuvar</td><td>Numune, yöntem, sonuç, analist</td><td>Analiz raporu</td></tr>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="num">§ 08</div>
+  <div class="body">
+    <h2>Teknik sınırlar</h2>
+    <p>Aşağıdakiler eksiklik değil, kullanılan platformun gerçekleridir. Kurulumdan önce
+    bilinmeleri, sonradan keşfedilmelerinden iyidir.</p>
+
+    <h3>Google Docs’ta “sayfa” diye bir yapı yoktur</h3>
+    <p>Belge, yazılım tarafında kesintisiz bir akış olarak görülür; sayfalara bölünme
+    yalnızca ekrana ya da kâğıda basılırken hesaplanır. Bu yüzden “ilk iki sayfa” ancak
+    şablonda <b>açık sayfa sonu işareti</b> varsa kesin olarak tanımlıdır. Şablon otomatik
+    sayfalanmaya bırakılmışsa, metin uzadıkça kesme noktası kayar. Kısa sürüm isteyen her
+    kurulumda ilk sorulacak soru budur.</p>
+
+    <h3>QR dışarıdan gelir</h3>
+    <p>Apps Script’in karekod üreticisi yoktur; görsel bir dış servisten alınır.
+    Bu, sistemin çalışma anında üçüncü bir tarafa bağlı olduğu anlamına gelir.
+    Sistem bunu gizlemek yerine kural hâline getirir: servis yanıt vermezse
+    sertifika üretilmez.</p>
+
+    <h3>Tarih hücreleri metin değildir</h3>
+    <p>Tabloya girilen tarih, görünüşte <code>14.09.2026</code> olsa da arka planda
+    tarih nesnesi olarak saklanır ve doğrudan okunduğunda bambaşka bir biçimde gelir.
+    Sistem dönüşümü açıkça yapar. Küçük bir ayrıntıdır, ama sessizce yanlış belge
+    üretmeye en açık yerdir.</p>
+  </div>
+</section>
+
+<footer>
+  <span>MÖHÜR · SERTİFİKA ÜRETİM SİSTEMİ</span>
+  <span>14.09.2026</span>
+</footer>
+</body>
+</html>
